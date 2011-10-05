@@ -1,0 +1,47 @@
+body {
+	width: 80%;
+	margin: 0px auto;
+}
+
+table {
+	border-collapse: collapse;
+	display: inline-block;
+	margin: 0px 30px;
+}
+
+table > tbody > tr {
+	text-align: center;
+	vertical-align: middle;
+}
+
+table > tbody > tr > td {
+	border: 1px solid black;
+	width: 30px;
+	height: 30px;
+}
+
+table > tbody > tr > td.assigned {
+	font-family: 'Gravitas One', cursive;
+	font-style: normal;
+	font-weight: 400;
+}
+
+table > tbody > tr > td:nth-of-type(3n) {
+	border-right: 3px solid black;
+}
+
+table > tbody > tr > td:nth-of-type(3n + 1) {
+	border-left: 3px solid black;
+}
+
+table > tbody > tr:nth-of-type(3n) {
+	border-bottom: 3px solid black;
+}
+
+table > tbody > tr:first-child {
+	border-top: 3px solid black;
+}
+
+table > tbody > tr > td.hit {
+	background-color: green;
+}
