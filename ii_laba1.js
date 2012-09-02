@@ -7,20 +7,7 @@
 	}
 	var rows = window.document.querySelectorAll('table#sudoku > tbody > tr');
 	var matrixOfLeadership = new Array(rows.length);
-	for(i=0; i<rows.length; i++){
-		matrixOfLeadership[i] = new Array(rows.length);
-		var cols = window.document.querySelectorAll('table#sudoku > tbody > tr:nth-of-type('+(i+1)+') > td');
-		for(var j=0; j<cols.length; j++){
-			matrixOfLeadership[i][j] = cols[j].textContent;
-		}
-	}		
-	var matrixOfHits = new Array(rows.length);
-	for(i=0; i<rows.length; i++){
-		matrixOfHits[i] = new Array(rows.length);
-		for(j=0; j<rows.length; j++){
-			matrixOfHits[i][j] = new Array(rows.length);
-		}
-	}
+	
 	function getHits(){
 		for(var i=0; i<rows.length; i++){
 			for(var j=0; j<rows.length; j++){
@@ -78,7 +65,7 @@
 		numberOfHits = new Array(rows.length);
 		for(i=0; i<rows.length; i++){
 			numberOfHits[i] = new Array(rows.length);
-			for(j=0; j<rows.length; j++)
+			for(var j=0; j<rows.length; j++)
 				numberOfHits[i][j] = 0;
 		}
 	}
@@ -94,7 +81,10 @@
 		}
 	}
 	function searchMinimumHit(){
-		var minHit = Math.max.apply(null, numberOfHits[0].filter(function(element, index, array){
+		var concatHits = new Array();
+		for(i=0; i<rows.length; i++)
+			concatHits = concatHits.concat(numberOfHits[i]);
+		var minHit = Math.max.apply(null, concatHits.filter(function(element, index, array){
 			return (element != 0);
 		}));
 		var indexHit = false;
@@ -106,8 +96,11 @@
 				}
 			}
 		}
-		tdHits = window.document.querySelector('table#hits > tbody > tr:nth-of-type('+(indexHit[0]+1)+') td:nth-of-type('+(indexHit[1]+1)+')');
-		tdHits.classList.add('hit');
+		try{
+			tdHits = window.document.querySelector('table#hits > tbody > tr:nth-of-type('+(indexHit[0]+1)+') td:nth-of-type('+(indexHit[1]+1)+')');
+			tdHits.classList.add('hit');
+		}
+		catch(event){}
 		return indexHit;
 	}
 	function insertNumber(indexHit){
@@ -124,10 +117,37 @@
 		}
 		else
 			return false;
-	}	
+	}
+	
+	
+	var matrixOfHits = new Array(rows.length);
+	function begin(){
+		for(var i=0; i<rows.length; i++){
+			matrixOfLeadership[i] = new Array(rows.length);
+			var cols = window.document.querySelectorAll('table#sudoku > tbody > tr:nth-of-type('+(i+1)+') > td');
+			for(var j=0; j<cols.length; j++){
+				if(cols[j].classList.contains('assigned'))
+					matrixOfLeadership[i][j] = cols[j].textContent;
+				else{
+					matrixOfLeadership[i][j] = '';
+					cols[j].textContent = '';
+				}
+				cols[j].classList.remove('fail');
+			}
+		}		
+	
+		for(i=0; i<rows.length; i++){
+			matrixOfHits[i] = new Array(rows.length);
+			for(j=0; j<rows.length; j++){
+				matrixOfHits[i][j] = new Array(rows.length);
+			}
+		}
+		run();
+	}
+	
 	
 	var tdSudoku, tdHits;
-	
+	var idRun;
 	function run(){
 		if(typeof tdHits !='undefined'){
 			tdHits.classList.remove('hit');
@@ -138,8 +158,43 @@
 		getNumberOfHits();
 		searchMinimumHit();
 		if(insertNumber(searchMinimumHit()))
-			setTimeout(run, 1000);
+			idRun = setTimeout(run, 1000);
+		else
+			checkSudoku();
 		
 	}
-	run();
+	begin();
+	
+	console.log(matrixOfHits[0][2]);
+	for(i=0; i<rows.length; i++)
+		console.log(numberOfHits[i]);
+	for(i=0; i<rows.length; i++)
+		console.log(matrixOfLeadership[i]);
+		
+	var sd = window.document.querySelector('#sudoku > tbody');
+	sd.addEventListener('click', handleClick, false);
+	function handleClick(event){
+		var insertNumber = parseInt(prompt('Введите число или оставьте поле пустым',''));
+		if(isNaN(insertNumber)){
+			insertNumber = '';
+			event.target.classList.remove('assigned');
+		}
+		else if(insertNumber > rows.length || insertNumber < 1){
+			insertNumber = rows.length;
+			event.target.classList.add('assigned');
+		}
+		else
+			event.target.classList.add('assigned');
+		event.target.textContent = insertNumber;
+		clearTimeout(idRun);
+		begin();
+	}
+	function checkSudoku(){
+		for(var i=0; i<rows.length; i++){
+			var cols = window.document.querySelectorAll('table#sudoku > tbody > tr:nth-of-type('+(i+1)+') > td');
+			for(var j=0; j<cols.length; j++)
+				if(cols[j].textContent == '')
+					cols[j].classList.add('fail');
+		}
+	}
 })(window);

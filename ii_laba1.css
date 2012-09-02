@@ -7,6 +7,7 @@ table {
 	border-collapse: collapse;
 	display: inline-block;
 	margin: 0px 30px;
+	vertical-align: top;
 }
 
 table > tbody > tr {
@@ -44,4 +45,17 @@ table > tbody > tr:first-child {
 
 table > tbody > tr > td.hit {
 	background-color: green;
+}
+
+table > tbody > tr > td.fail {
+	background-color: red;
+}
+
+details > summary > h2 {
+	display: inline;
+}
+
+details > p {
+	text-indent: 10px;
+	text-align: justify;
 }
